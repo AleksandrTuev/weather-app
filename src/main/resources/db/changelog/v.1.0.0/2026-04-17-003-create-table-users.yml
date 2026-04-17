@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-users
+      author: Alext_v
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_users
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: locations
+            constraintName: fk_locations_users
+            referencedColumnNames: id
+            referencedTableName: users
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: sessions
+            constraintName: fk_sessions_users
+            referencedColumnNames: id
+            referencedTableName: users
