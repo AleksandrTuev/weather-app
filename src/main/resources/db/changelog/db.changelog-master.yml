@@ -3,7 +3,7 @@ databaseChangeLog:
       file: v.1.0.0/2026-04-17-001-create-table-locations.yml
       relativeToChangelogFile: true
   - include:
-      file: v.1.0.0/2026-04-17-002-create-table-sessions.yml
+      file: v.1.0.0/2026-04-17-002-create-table-sessions.sql
       relativeToChangelogFile: true
   - include:
       file: v.1.0.0/2026-04-17-003-create-table-users.yml
