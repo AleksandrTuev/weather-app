@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+    id: create-table-locations
+    author: Alext_v
+    changes:
+      - createTable:
+        tableName: locations
+        columns:
+          - column:
+            name: id
+            type: int
+            autoincrement: true
+            constraint:
+              primaryKey: true
+              primaryKeyName: pk_locations
+              nullable: false
+          - column:
+            name: name
+            type: varchar(64)
+            constraint:
+              nullable: false
+          - column:
+            name: user_id
+            type: int
+            constraint:
+              nullable: false
+          - column:
+            name: latitude
+            type: decimal
+            constraint:
+              nullable: false
+          - column:
+            name: longitude
+            type: decimal
+            constraint:
+              nullable: false
+
+

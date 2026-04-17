@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+    id: create-table-sessions
+    author: Alext_v
+    changes:
+      - createTable:
+        tableName: sessions
+        columns:
+          - column:
+            name: id
+            type: uuid
+            constraint:
+              nullable: false
+          - column:
+            name: user_id
+            type: int
+            constraint:
+              nullable: false
+          - column:
+            name: expires_at
+            type: datetime
+            constraint:
+              nullable: false

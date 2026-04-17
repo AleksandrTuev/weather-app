@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: classpath:v.1.0.0/2026-04-15-001-create-table-locations.yml
+  - include:
+      file: classpath:v.1.0.0/v.1.0.0/2026-04-15-002-create-table-sessions.yml
+  - include:
+      file: classpath:v.1.0.0/2026-04-15-003-create-table-users.yml
