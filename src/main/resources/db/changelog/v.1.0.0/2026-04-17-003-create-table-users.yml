@@ -6,7 +6,7 @@ databaseChangeLog:
         - onFail: MARK_RAN
           not:
             tableExists:
-              tableName: locations
+              tableName: users
       changes:
         - createTable:
             tableName: users
