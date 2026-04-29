@@ -1,7 +1,9 @@
 package com.dev.controller;
 
+import com.dev.dto.UserSignInDto;
 import com.dev.model.User;
 import com.dev.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +33,10 @@ public class SignInController{
     }
 
     @PostMapping
-    public String signIn(@ModelAttribute("user") User user, HttpServletRequest req, HttpServletResponse resp) {
+    public String signIn(@ModelAttribute("user") UserSignInDto userDto, HttpServletRequest req, HttpServletResponse resp) {
         //todo в случаи невалидных данных редирект на "redirect:sign-in-with-errors"
-        userService.signIn(user.getUsername(), user.getPassword(), req, resp);
+        Cookie cookie = userService.signIn(userDto);
+        resp.addCookie(cookie);
         return "redirect:/";
     }
 }

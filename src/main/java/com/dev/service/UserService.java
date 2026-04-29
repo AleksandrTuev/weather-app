@@ -1,54 +1,61 @@
 package com.dev.service;
 
+import com.dev.dto.UserSignInDto;
+import com.dev.dto.UserSignUpDto;
+import com.dev.mapper.UserMapper;
 import com.dev.model.User;
 import com.dev.repository.UserRepository;
-import com.dev.util.CreatorCookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
     private final SessionService sessionService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    @Autowired
-    public UserService(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
+//    @Autowired
+//    public UserService(SessionService sessionService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+//        this.sessionService = sessionService;
+//        this.userRepository = userRepository;
+//        this.passwordEncoder = passwordEncoder;
+//    }
 
-    public void signIn(String userName, String password, HttpServletRequest req, HttpServletResponse resp) {
-        User user = findUserByUsername(userName);
-        if (new BCryptPasswordEncoder().matches(password, user.getPassword())) {
-            CreatorCookie.create("user_id", String.valueOf(user.getId()), resp);
-            sessionService.createSession(req, resp, user.getId());
-            log.info("Пользователь с ID: {} авторизовался", user.getId());
+    public Cookie signIn(UserSignInDto userDto) {
+        User user = findUserByUsername(userDto.getUsername());
+        if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+            log.info("[{}] authorization [id: {}]", LocalDateTime.now(), user.getId());
+            return sessionService.createSession(user.getId());
         }
+        //todo подумать что выкидывать при провалившейся авторизации
+        return null; //todo заглушка
     }
 
-    public void signUp(User user, HttpServletRequest req, HttpServletResponse resp) {
-        String hashedPassword = encode(user.getPassword());
+    public Cookie signUp(UserSignUpDto userDto) {
+        User user = userMapper.toUser(userDto);
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
-        int userId = UserRepository.save(user);
-        CreatorCookie.create("user_id", String.valueOf(userId), resp);
-        sessionService.createSession(req, resp, userId);
-        log.info("Пользователь с ID: {} зарегистрировался", userId);
+        int userId = userRepository.save(user);
+        log.info("[{}] registration (id: {})", LocalDateTime.now(), userId);
+        return sessionService.createSession(userId);
     }
 
-    public void signOut(HttpServletRequest req, HttpServletResponse res) {
+    public Cookie signOut(String sessionId) {
         //скорее всего это для сессии
-
+        return sessionService.deleteSession(UUID.fromString(sessionId));
     }
 
     private User findUserByUsername(String username) {
         //todo возвращать Optional. Юзера с данным именем может и не быть
-        return UserRepository.findByName(username).get();
-    }
-
-    private String encode(String password) {
-        return new BCryptPasswordEncoder().encode(password);
+        return userRepository.findByName(username).get();
     }
 }

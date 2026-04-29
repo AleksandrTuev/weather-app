@@ -2,33 +2,49 @@ package com.dev.service;
 
 import com.dev.model.Session;
 import com.dev.repository.SessionRepository;
-import com.dev.util.CreatorCookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.Cookie;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Service
-public class SessionService {
+import static com.dev.util.ProjectConstants.*;
 
+@Service
+@RequiredArgsConstructor
+public class SessionService {
     private final SessionRepository sessionRepository;
 
-    @Autowired
-    public SessionService(SessionRepository sessionRepository) {
-        this.sessionRepository = sessionRepository;
-    }
-
-    public void createSession(HttpServletRequest req, HttpServletResponse resp, int userId) {
+    public Cookie createSession(Integer userId) {
         UUID uuid = UUID.randomUUID();
         Session session = Session.builder()
                 .uuid(uuid)
                 .userId(userId)
-                .expiresAt(LocalDateTime.now().plusHours(1))
+                .expiresAt(LocalDateTime.now().plusMinutes(SESSION_EXPIRATION_TIME_IN_MINUTES))
                 .build();
-        CreatorCookie.create("session_id", String.valueOf(uuid), resp);
         sessionRepository.create(session);
+        return createCookie(uuid);
+    }
+
+    public Cookie deleteSession(UUID sessionId) {
+        sessionRepository.delete(sessionId);
+        return deleteCookie(sessionId);
+    }
+
+    private Cookie createCookie(UUID uuid) {
+        Cookie cookie = new Cookie(SESSION_ID, String.valueOf(uuid));
+        cookie.setPath("/");
+        cookie.setMaxAge(COOKIE_EXPIRATION_TIME_IN_SECONDS);
+        cookie.setHttpOnly(true);
+        return cookie;
+    }
+
+    private Cookie deleteCookie(UUID uuid) {
+        Cookie cookie = new Cookie(SESSION_ID, String.valueOf(uuid));
+        cookie.setMaxAge(DELETE_COOKIE_MAX_AGE);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 }

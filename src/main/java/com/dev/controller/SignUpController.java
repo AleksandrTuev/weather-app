@@ -1,7 +1,9 @@
 package com.dev.controller;
 
+import com.dev.dto.UserSignUpDto;
 import com.dev.model.User;
 import com.dev.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +27,16 @@ public class SignUpController {
 
     @GetMapping
     public String getRegisterPage(Model model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("newUser", new UserSignUpDto());
         return "sign-up";
     }
 
     @PostMapping
-    public String signUp(@ModelAttribute("user") User user, HttpServletRequest req, HttpServletResponse resp) {
+    public String signUp(@ModelAttribute("newUser") UserSignUpDto userDto, HttpServletRequest req, HttpServletResponse resp) {
         //todo в случаи невалидных данных редирект на "redirect:sign-up-with-errors"
-        userService.signUp(user, req, resp);
+        //- не совпадение паролей
+        Cookie cookie = userService.signUp(userDto);
+        resp.addCookie(cookie);
         return "redirect:/";
     }
 }

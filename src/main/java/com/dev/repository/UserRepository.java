@@ -2,41 +2,42 @@ package com.dev.repository;
 
 import com.dev.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
 public class UserRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
 
-    private static JdbcTemplate jdbcTemplate;
+    private static final String SELECT_USER_BY_LOGIN = "SELECT * FROM users WHERE login = ?";
 
     @Autowired
-    public UserRepository(JdbcTemplate jdbcTemplate) {
+    public UserRepository(JdbcTemplate jdbcTemplate,
+                          @Qualifier("userInsert") SimpleJdbcInsert simpleJdbcInsert) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = simpleJdbcInsert;
     }
 
-    public static int save(User user) {
-        String sql = "insert into users (login, password) values (?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, user.getUsername());
-            ps.setString(2, user.getPassword());
-            return ps;
-        }, keyHolder);
-        return (int) keyHolder.getKeys().get("id");
+    public int save(User user) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("login", user.getUsername());
+        parameters.put("password", user.getPassword());
+
+        return simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 
-    public static Optional<User> findByName(String username) {
-        String sql = "select * from users where login = ?";
-        return jdbcTemplate.query(sql, new Object[]{username}, new BeanPropertyRowMapper<>(User.class))
+    public Optional<User> findByName(String username) {
+        return jdbcTemplate.query(SELECT_USER_BY_LOGIN,
+                        new Object[]{username},
+                        new BeanPropertyRowMapper<>(User.class))
                 .stream().findFirst();
     }
 }
