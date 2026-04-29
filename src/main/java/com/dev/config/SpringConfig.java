@@ -19,6 +19,7 @@ import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 @Configuration
 @ComponentScan("com.dev")
 @EnableWebMvc
+@EnableScheduling
 public class SpringConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
