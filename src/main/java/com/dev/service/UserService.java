@@ -49,11 +49,6 @@ public class UserService {
         return sessionService.createSession(userId);
     }
 
-    public Cookie signOut(String sessionId) {
-        //скорее всего это для сессии
-        return sessionService.deleteSession(UUID.fromString(sessionId));
-    }
-
     private User findUserByUsername(String username) {
         //todo возвращать Optional. Юзера с данным именем может и не быть
         return userRepository.findByName(username).get();

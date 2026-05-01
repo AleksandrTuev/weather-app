@@ -4,6 +4,7 @@ import com.dev.model.Session;
 import com.dev.repository.SessionRepository;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,11 @@ public class SessionService {
     public Cookie deleteSession(UUID sessionId) {
         sessionRepository.delete(sessionId);
         return deleteCookie(sessionId);
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void deleteOldSessions() {
+        sessionRepository.deleteOldSessions();
     }
 
     private Cookie createCookie(UUID uuid) {

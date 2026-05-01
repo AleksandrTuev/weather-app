@@ -33,7 +33,6 @@ public class SessionRepository {
         jdbcTemplate.update(DELETE_SESSION, uuid);
     }
 
-    @Scheduled(fixedDelay = 60000)
     public void deleteOldSessions() {
         jdbcTemplate.update(DELETE_OLD_SESSIONS, LocalDateTime.now());
     }
