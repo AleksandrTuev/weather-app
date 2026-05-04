@@ -25,13 +25,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-//    @Autowired
-//    public UserService(SessionService sessionService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-//        this.sessionService = sessionService;
-//        this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
-//    }
-
     public Cookie signIn(UserSignInDto userDto) {
         User user = findUserByUsername(userDto.getUsername());
         if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
