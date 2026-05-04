@@ -3,6 +3,7 @@ package com.dev.controller;
 import com.dev.dto.UserSignUpDto;
 import com.dev.model.User;
 import com.dev.service.UserService;
+import com.dev.util.ValidateUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,14 +28,13 @@ public class SignUpController {
 
     @GetMapping
     public String getRegisterPage(Model model) {
-        model.addAttribute("newUser", new UserSignUpDto());
+        model.addAttribute("user", new UserSignUpDto());
         return "sign-up";
     }
 
     @PostMapping
-    public String signUp(@ModelAttribute("newUser") UserSignUpDto userDto, HttpServletRequest req, HttpServletResponse resp) {
-        //todo в случаи невалидных данных редирект на "redirect:sign-up-with-errors"
-        //- не совпадение паролей
+    public String signUp(@ModelAttribute("user") UserSignUpDto userDto, HttpServletResponse resp) {
+        ValidateUtil.validateSigUpParameters(userDto.getUsername(), userDto.getPassword(), userDto.getRepeatPassword());
         Cookie cookie = userService.signUp(userDto);
         resp.addCookie(cookie);
         return "redirect:/";

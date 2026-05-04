@@ -3,6 +3,7 @@ package com.dev.controller;
 import com.dev.dto.UserSignInDto;
 import com.dev.model.User;
 import com.dev.service.UserService;
+import com.dev.util.ValidateUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,8 +34,8 @@ public class SignInController{
     }
 
     @PostMapping
-    public String signIn(@ModelAttribute("user") UserSignInDto userDto, HttpServletRequest req, HttpServletResponse resp) {
-        //todo в случаи невалидных данных редирект на "redirect:sign-in-with-errors"
+    public String signIn(@ModelAttribute("user") UserSignInDto userDto, HttpServletResponse resp) {
+        ValidateUtil.validateLoginParameters(userDto.getUsername(), userDto.getPassword());
         Cookie cookie = userService.signIn(userDto);
         resp.addCookie(cookie);
         return "redirect:/";

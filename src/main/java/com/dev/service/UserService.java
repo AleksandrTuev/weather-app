@@ -2,6 +2,8 @@ package com.dev.service;
 
 import com.dev.dto.UserSignInDto;
 import com.dev.dto.UserSignUpDto;
+import com.dev.exception.InvalidPasswordException;
+import com.dev.exception.UserNotFoundException;
 import com.dev.mapper.UserMapper;
 import com.dev.model.User;
 import com.dev.repository.UserRepository;
@@ -35,22 +37,28 @@ public class UserService {
         if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
             log.info("[{}] authorization [id: {}]", LocalDateTime.now(), user.getId());
             return sessionService.createSession(user.getId());
+        } else {
+            throw new InvalidPasswordException("Invalid password");
         }
-        //todo подумать что выкидывать при провалившейся авторизации
-        return null; //todo заглушка
     }
 
     public Cookie signUp(UserSignUpDto userDto) {
         User user = userMapper.toUser(userDto);
+
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
+
+        String newUserName = user.getUsername();
+        user.setUsername(newUserName);
+
         int userId = userRepository.save(user);
         log.info("[{}] registration (id: {})", LocalDateTime.now(), userId);
         return sessionService.createSession(userId);
     }
 
     private User findUserByUsername(String username) {
-        //todo возвращать Optional. Юзера с данным именем может и не быть
-        return userRepository.findByName(username).get();
+        return userRepository.findByName(username.toLowerCase()).orElseThrow(
+               () -> new UserNotFoundException("User not found")
+        );
     }
 }

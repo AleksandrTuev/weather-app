@@ -14,7 +14,6 @@ import static com.dev.util.ProjectConstants.SESSION_ID;
 @RequestMapping("/sign-out")
 @RequiredArgsConstructor
 public class SignOutController {
-    private final UserService userService;
 
     @PostMapping
     public String signOut(HttpServletResponse resp) {
