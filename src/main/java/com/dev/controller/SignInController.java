@@ -3,14 +3,14 @@ package com.dev.controller;
 import com.dev.dto.UserSignInDto;
 import com.dev.model.User;
 import com.dev.service.UserService;
-import com.dev.util.ValidateUtil;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,8 +34,12 @@ public class SignInController{
     }
 
     @PostMapping
-    public String signIn(@ModelAttribute("user") UserSignInDto userDto, HttpServletResponse resp) {
-        ValidateUtil.validateLoginParameters(userDto.getUsername(), userDto.getPassword());
+    public String signIn(@ModelAttribute("user") @Valid UserSignInDto userDto, BindingResult bindingResult,
+                         HttpServletResponse resp) {
+        if (bindingResult.hasErrors()) {
+            return "sign-in-with-errors";
+        }
+
         Cookie cookie = userService.signIn(userDto);
         resp.addCookie(cookie);
         return "redirect:/";

@@ -1,15 +1,14 @@
 package com.dev.controller;
 
 import com.dev.dto.UserSignUpDto;
-import com.dev.model.User;
 import com.dev.service.UserService;
-import com.dev.util.ValidateUtil;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +32,12 @@ public class SignUpController {
     }
 
     @PostMapping
-    public String signUp(@ModelAttribute("user") UserSignUpDto userDto, HttpServletResponse resp) {
-        ValidateUtil.validateSigUpParameters(userDto.getUsername(), userDto.getPassword(), userDto.getRepeatPassword());
+    public String signUp(@ModelAttribute("user") @Valid UserSignUpDto userDto, BindingResult bindingResult,
+                         HttpServletResponse resp) {
+        if (bindingResult.hasErrors()) {
+            return "sign-up-with-errors";
+        }
+
         Cookie cookie = userService.signUp(userDto);
         resp.addCookie(cookie);
         return "redirect:/";

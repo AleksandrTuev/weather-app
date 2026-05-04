@@ -17,6 +17,7 @@ public class SignOutController {
 
     @PostMapping
     public String signOut(HttpServletResponse resp) {
+        //todo удалять сессию из БД сразу. Шедулед оставим
         Cookie cookie = new Cookie(SESSION_ID, null);
         cookie.setPath("/");
         cookie.setMaxAge(0);
