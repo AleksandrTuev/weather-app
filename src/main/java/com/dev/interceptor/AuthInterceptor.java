@@ -16,11 +16,11 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) throws Exception {
-        String uri = req.getRequestURI();
-
-        if ((uri.contains(PATH_SIGN_IN)) || (uri.contains(PATH_SIGN_UP))){
-            return true;
-        }
+//        String uri = req.getRequestURI();
+//
+//        if ((uri.contains(PATH_SIGN_IN)) || (uri.contains(PATH_SIGN_UP))){
+//            return true;
+//        }
 
         if ((req.getCookies() == null)) {
             redirectToLogin(req, resp);
