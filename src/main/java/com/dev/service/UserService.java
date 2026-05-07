@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -44,6 +46,10 @@ public class UserService {
         int userId = userRepository.save(user);
         log.info("Registration (id: {})", userId);
         return sessionService.createSession(userId);
+    }
+
+    public void signOut(String sessionId) {
+        sessionService.deleteSession(UUID.fromString(sessionId));
     }
 
     private User findUserByUsername(String username) {

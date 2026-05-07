@@ -31,6 +31,11 @@ public class SessionRepository {
         jdbcTemplate.update(INSERT_SESSION, session.getUuid(), session.getUserId(), session.getExpiresAt());
     }
 
+    public void delete(UUID id) {
+        log.info("Deleting session {}", id);
+        jdbcTemplate.update(DELETE_SESSION, id);
+    }
+
     public Session getById(UUID id) {
         log.info("Get session by id: {}", id);
         return jdbcTemplate.query(FIND_SESSION, new BeanPropertyRowMapper<>(Session.class), id)

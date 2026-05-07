@@ -35,6 +35,11 @@ public class SessionService {
         return sessionRepository.getById(sessionId) != null;
     }
 
+    public void deleteSession(UUID sessionId) {
+        log.info("Deleting session with id {}", sessionId);
+        sessionRepository.delete(sessionId);
+    }
+
     @Scheduled(fixedDelay = 600000)
     public void deleteOldSessions() {
         sessionRepository.deleteOldSessions();
@@ -48,11 +53,11 @@ public class SessionService {
         return cookie;
     }
 
-    public void deleteCookie(String sessionId) {
+    public Cookie deleteCookie(String sessionId) {
         Cookie cookie = new Cookie(SESSION_ID, sessionId);
         cookie.setMaxAge(DELETE_COOKIE_MAX_AGE);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        //убрано из метод возврат Cookie
+        return cookie;
     }
 }
