@@ -40,11 +40,6 @@ public class SessionService {
         sessionRepository.delete(sessionId);
     }
 
-    @Scheduled(fixedDelay = 600000)
-    public void deleteOldSessions() {
-        sessionRepository.deleteOldSessions();
-    }
-
     private Cookie createCookie(UUID uuid) {
         Cookie cookie = new Cookie(SESSION_ID, String.valueOf(uuid));
         cookie.setPath("/");
