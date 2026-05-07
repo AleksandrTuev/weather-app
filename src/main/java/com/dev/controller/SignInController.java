@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/sign-in")
 @Slf4j
 public class SignInController{
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public SignInController(UserService userService) {

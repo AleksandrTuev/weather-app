@@ -1,7 +1,8 @@
 package com.dev.config;
 
 import com.dev.interceptor.AuthInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dev.service.SessionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,14 +23,10 @@ import javax.sql.DataSource;
 @ComponentScan("com.dev")
 @EnableWebMvc
 @EnableScheduling
+@RequiredArgsConstructor
 public class SpringConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
-
-    @Autowired
-    public SpringConfig(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
@@ -73,18 +70,19 @@ public class SpringConfig implements WebMvcConfigurer {
         registry.viewResolver(resolver);
     }
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new AuthInterceptor())
-//                .addPathPatterns("/**")
-//                .excludePathPatterns(
-//                        "/css/**",
-//                        "/images/**",
-//                        "/favicon.ico",
-//                        "/sign-in",
-//                        "/sign-up"
-//                );
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        SessionService sessionService = (SessionService) applicationContext.getBean("sessionService");
+        registry.addInterceptor(new AuthInterceptor(sessionService))
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/css/**",
+                        "/images/**",
+                        "/favicon.ico",
+                        "/sign-in",
+                        "/sign-up"
+                );
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

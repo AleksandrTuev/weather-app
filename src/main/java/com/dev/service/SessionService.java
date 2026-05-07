@@ -4,6 +4,7 @@ import com.dev.model.Session;
 import com.dev.repository.SessionRepository;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import static com.dev.util.ProjectConstants.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SessionService {
     private final SessionRepository sessionRepository;
 
@@ -28,12 +30,12 @@ public class SessionService {
         return createCookie(uuid);
     }
 
-    public Cookie deleteSession(UUID sessionId) {
-        sessionRepository.delete(sessionId);
-        return deleteCookie(sessionId);
+    public boolean hasSession(UUID sessionId) {
+        log.info("Checking if session exists with id {}", sessionId);
+        return sessionRepository.getById(sessionId) != null;
     }
 
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 600000)
     public void deleteOldSessions() {
         sessionRepository.deleteOldSessions();
     }
@@ -46,11 +48,11 @@ public class SessionService {
         return cookie;
     }
 
-    private Cookie deleteCookie(UUID uuid) {
-        Cookie cookie = new Cookie(SESSION_ID, String.valueOf(uuid));
+    public void deleteCookie(String sessionId) {
+        Cookie cookie = new Cookie(SESSION_ID, sessionId);
         cookie.setMaxAge(DELETE_COOKIE_MAX_AGE);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        return cookie;
+        //убрано из метод возврат Cookie
     }
 }

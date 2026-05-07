@@ -1,6 +1,5 @@
 package com.dev.controller;
 
-import com.dev.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

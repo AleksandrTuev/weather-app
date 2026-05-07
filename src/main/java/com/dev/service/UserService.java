@@ -13,9 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +25,7 @@ public class UserService {
     public Cookie signIn(UserSignInDto userDto) {
         User user = findUserByUsername(userDto.getUsername());
         if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            log.info("[{}] authorization [id: {}]", LocalDateTime.now(), user.getId());
+            log.info("Authorization [id: {}]", user.getId());
             return sessionService.createSession(user.getId());
         } else {
             throw new InvalidPasswordException("Invalid password");
@@ -45,11 +42,12 @@ public class UserService {
         user.setUsername(newUserName);
 
         int userId = userRepository.save(user);
-        log.info("[{}] registration (id: {})", LocalDateTime.now(), userId);
+        log.info("Registration (id: {})", userId);
         return sessionService.createSession(userId);
     }
 
     private User findUserByUsername(String username) {
+        log.info("Finding user");
         return userRepository.findByName(username.toLowerCase()).orElseThrow(
                () -> new UserNotFoundException("User not found")
         );

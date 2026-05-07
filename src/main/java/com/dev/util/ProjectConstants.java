@@ -13,8 +13,4 @@ public class ProjectConstants {
     public static final int MIN_NAME_LENGTH = 4;
     public static final int MAX_PASSWORD_LENGTH = 64;
     public static final int MIN_PASSWORD_LENGTH = 8;
-
-    //Paths
-    public static final String PATH_SIGN_IN = "/sign-in";
-    public static final String PATH_SIGN_UP = "/sign-up";
 }
