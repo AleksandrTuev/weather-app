@@ -4,6 +4,7 @@ import com.dev.dto.UserSignInDto;
 import com.dev.dto.UserSignUpDto;
 import com.dev.exception.InvalidPasswordException;
 import com.dev.exception.UserNotFoundException;
+import com.dev.exception.UsernameAlreadyExistsException;
 import com.dev.mapper.UserMapper;
 import com.dev.model.User;
 import com.dev.repository.UserRepository;
@@ -40,8 +41,12 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
 
-        String newUserName = user.getUsername();
+        String newUserName = user.getUsername().toLowerCase();
         user.setUsername(newUserName);
+
+        if (userRepository.findByName(newUserName).isPresent()) {
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
 
         int userId = userRepository.save(user);
         log.info("Registration (id: {})", userId);

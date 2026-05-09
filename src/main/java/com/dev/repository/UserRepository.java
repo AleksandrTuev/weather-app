@@ -30,7 +30,7 @@ public class UserRepository {
 
     public int save(User user) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("login", user.getUsername().toLowerCase());
+        parameters.put("login", user.getUsername());
         parameters.put("password", user.getPassword());
         log.info("Saving user: {}", user);
         return simpleJdbcInsert.executeAndReturnKey(parameters).intValue();

@@ -24,6 +24,8 @@ databaseChangeLog:
                   type: varchar(64)
                   constraints:
                     nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_users_login
               - column:
                   name: password
                   type: varchar(255)

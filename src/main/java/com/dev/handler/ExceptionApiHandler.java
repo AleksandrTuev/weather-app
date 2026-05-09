@@ -1,6 +1,7 @@
 package com.dev.handler;
 
 import com.dev.dto.UserSignInDto;
+import com.dev.dto.UserSignUpDto;
 import com.dev.exception.InvalidPasswordException;
 import com.dev.exception.UserNotFoundException;
 import com.dev.exception.UsernameAlreadyExistsException;
@@ -54,7 +55,16 @@ public class ExceptionApiHandler {
 
     private ModelAndView createModelAndView(String viewName, Exception e) {
         ModelAndView modelAndView = new ModelAndView(viewName);
-        modelAndView.addObject(USER, getUserSignInDto());
+        switch (viewName) {
+            case SIGN_IN_WITH_ERRORS: {
+                modelAndView.addObject(USER, getUserSignInDto());
+                break;
+            }
+            case SIGN_UP_WITH_ERRORS: {
+                modelAndView.addObject(USER, getUserSignUpDto());
+                break;
+            }
+        }
         modelAndView.addObject(MESSAGE, e.getMessage());
         return modelAndView;
     }
@@ -64,5 +74,13 @@ public class ExceptionApiHandler {
         userSignInDto.setUsername(req.getParameter(USERNAME));
         userSignInDto.setPassword(req.getParameter(PASSWORD));
         return userSignInDto;
+    }
+
+    private UserSignUpDto getUserSignUpDto() {
+        UserSignUpDto userSignUpDto = new UserSignUpDto();
+        userSignUpDto.setUsername(req.getParameter(USERNAME));
+        userSignUpDto.setPassword(req.getParameter(PASSWORD));
+        userSignUpDto.setRepeatPassword(req.getParameter(REPEAT_PASSWORD));
+        return userSignUpDto;
     }
 }
