@@ -3,9 +3,9 @@ package com.dev.service;
 import com.dev.model.Session;
 import com.dev.repository.SessionRepository;
 import jakarta.servlet.http.Cookie;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,17 +14,23 @@ import java.util.UUID;
 import static com.dev.util.ProjectConstants.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class SessionService {
     private final SessionRepository sessionRepository;
+    private final long sessionStorageTime;
+
+    @Autowired
+    public SessionService(SessionRepository sessionRepository, @Value("${sessionStorageTime}") long sessionStorageTime) {
+        this.sessionRepository = sessionRepository;
+        this.sessionStorageTime = sessionStorageTime;
+    }
 
     public Cookie createSession(Integer userId) {
         UUID uuid = UUID.randomUUID();
         Session session = Session.builder()
                 .uuid(uuid)
                 .userId(userId)
-                .expiresAt(LocalDateTime.now().plusMinutes(SESSION_EXPIRATION_TIME_IN_MINUTES))
+                .expiresAt(LocalDateTime.now().plusMinutes(sessionStorageTime))
                 .build();
         sessionRepository.create(session);
         return createCookie(uuid);
