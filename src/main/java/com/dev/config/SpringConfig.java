@@ -7,11 +7,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
@@ -23,6 +27,7 @@ import javax.sql.DataSource;
 @ComponentScan("com.dev")
 @EnableWebMvc
 @EnableScheduling
+@EnableTransactionManagement
 @RequiredArgsConstructor
 public class SpringConfig implements WebMvcConfigurer {
 
@@ -72,7 +77,8 @@ public class SpringConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        SessionService sessionService = (SessionService) applicationContext.getBean("sessionService");
+//        SessionService sessionService = (SessionService) applicationContext.getBean("sessionService");
+        SessionService sessionService = applicationContext.getBean(SessionService.class);
         registry.addInterceptor(new AuthInterceptor(sessionService))
                 .addPathPatterns("/**")
                 .excludePathPatterns(
@@ -89,5 +95,10 @@ public class SpringConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
         registry.addResourceHandler("/images/**").addResourceLocations("/images/");
         registry.addResourceHandler("/favicon.ico").addResourceLocations("/");
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 }

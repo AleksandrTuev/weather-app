@@ -1,5 +1,6 @@
 package com.dev.mapper;
 
+import com.dev.dto.UserSignInDto;
 import com.dev.dto.UserSignUpDto;
 import com.dev.model.User;
 import org.mapstruct.Mapper;
@@ -9,5 +10,6 @@ public interface UserMapper{
 
     User toUser(UserSignUpDto user);
     UserSignUpDto toUserSignUpDto(User user);
+    UserSignInDto toUserSignInDto(User user);
 
 }
