@@ -1,4 +1,4 @@
-package com.dev.handler;
+package com.dev.advice;
 
 import com.dev.dto.UserSignInDto;
 import com.dev.dto.UserSignUpDto;
@@ -28,28 +28,28 @@ public class ExceptionApiHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ModelAndView handleAlreadyExistsName(UsernameAlreadyExistsException e) {
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
         return createModelAndView(SIGN_UP_WITH_ERRORS, e);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPasswordException.class)
     public ModelAndView handleInvalidNameOrPassword(InvalidPasswordException e) {
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
         return createModelAndView(SIGN_IN_WITH_ERRORS, e);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
     public ModelAndView handleNotFound(UserNotFoundException e) {
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
         return createModelAndView(SIGN_IN_WITH_ERRORS, e);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public String handleError(Exception e) {
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
         return "error";
     }
 

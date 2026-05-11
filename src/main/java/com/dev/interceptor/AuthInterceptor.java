@@ -46,7 +46,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 throw new SessionNotFoundException("Session not found");
             }
         } catch (IllegalArgumentException | SessionNotFoundException e) {
-            log.info("Has no session: {}", newCookie.getValue());
+            log.error("Session with id {} not found", newCookie.getValue());
 
             newCookie = sessionService.deleteCookie(newCookie.getValue());
             resp.addCookie(newCookie);

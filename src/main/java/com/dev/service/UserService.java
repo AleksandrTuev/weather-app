@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -31,6 +32,7 @@ public class UserService {
             log.info("Authorization [id: {}]", user.getId());
             return sessionService.createSession(user.getId());
         } else {
+            log.error("Invalid password. User #{}", user.getId());
             throw new InvalidPasswordException("Invalid password");
         }
     }
@@ -45,6 +47,7 @@ public class UserService {
         user.setUsername(newUserName);
 
         if (userRepository.findByName(newUserName).isPresent()) {
+            log.error("User with name '{}' already exists", newUserName);
             throw new UsernameAlreadyExistsException("Username already exists");
         }
 
@@ -59,8 +62,11 @@ public class UserService {
 
     private User findUserByUsername(String username) {
         log.info("Finding user");
-        return userRepository.findByName(username.toLowerCase()).orElseThrow(
-               () -> new UserNotFoundException("User not found")
-        );
+        try {
+            return userRepository.findByName(username.toLowerCase()).get();
+        } catch (NoSuchElementException e) {
+            log.error("User with name '{}' not found", username);
+            throw new UserNotFoundException("User not found");
+        }
     }
 }
