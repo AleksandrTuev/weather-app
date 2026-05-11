@@ -1,5 +1,6 @@
 package com.dev.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +23,10 @@ public class DataConfig {
 
     @Bean
     public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        HikariDataSource dataSource = new HikariDataSource();
 
         dataSource.setDriverClassName(env.getProperty("db.driver"));
-        dataSource.setUrl(env.getProperty("db.url"));
+        dataSource.setJdbcUrl(env.getProperty("db.url"));
         dataSource.setUsername(env.getProperty("db.user"));
         dataSource.setPassword(env.getProperty("db.password"));
 
