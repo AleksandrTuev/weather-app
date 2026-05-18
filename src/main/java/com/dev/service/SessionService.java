@@ -46,18 +46,23 @@ public class SessionService {
         sessionRepository.delete(sessionId);
     }
 
-    private Cookie createCookie(UUID uuid) {
-        Cookie cookie = new Cookie(SESSION_ID, String.valueOf(uuid));
-        cookie.setPath("/");
-        cookie.setMaxAge(COOKIE_EXPIRATION_TIME_IN_SECONDS);
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
-
     public Cookie deleteCookie(String sessionId) {
         Cookie cookie = new Cookie(SESSION_ID, sessionId);
         cookie.setMaxAge(DELETE_COOKIE_MAX_AGE);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        return cookie;
+    }
+
+    public int getUserIdBySessionId(UUID sessionId) {
+        log.info("Getting a user id by session id: {}", sessionId);
+        return sessionRepository.getById(sessionId).getUserId();
+    }
+
+    private Cookie createCookie(UUID uuid) {
+        Cookie cookie = new Cookie(SESSION_ID, String.valueOf(uuid));
+        cookie.setPath("/");
+        cookie.setMaxAge(COOKIE_EXPIRATION_TIME_IN_SECONDS);
         cookie.setHttpOnly(true);
         return cookie;
     }

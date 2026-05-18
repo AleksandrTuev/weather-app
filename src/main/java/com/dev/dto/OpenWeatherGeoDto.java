@@ -1,4 +1,4 @@
-package com.dev.model;
+package com.dev.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Location {
-    private int id;
+public class OpenWeatherGeoDto {
     private String name;
-    private int userId;
+    private String local_names;
+    private String country;
+    private String state;
     private BigDecimal latitude;
     private BigDecimal longitude;
 }

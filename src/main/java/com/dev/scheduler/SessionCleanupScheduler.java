@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class SessionCleanupScheduler {
     private final SessionRepository sessionRepository;
 
-    @Scheduled(fixedDelay = 120000, initialDelay = 60000)
+    @Scheduled(fixedDelay = 6000000, initialDelay = 60000)
     public void deleteOldSessions() {
         sessionRepository.deleteOldSessions();
     }

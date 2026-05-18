@@ -1,8 +1,8 @@
 package com.dev.repository;
 
 import com.dev.model.Session;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class SessionRepository {
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,12 +20,6 @@ public class SessionRepository {
     private static final String DELETE_SESSION = "DELETE FROM sessions WHERE id = ?";
     private static final String DELETE_OLD_SESSIONS = "DELETE FROM sessions WHERE expires_at < ?";
     public static final String FIND_SESSION = "SELECT id as uuid, user_id, expires_at FROM sessions WHERE id = ?";
-
-
-    @Autowired
-    public SessionRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     public void create(Session session) {
         log.info("Creating session {}", session);
