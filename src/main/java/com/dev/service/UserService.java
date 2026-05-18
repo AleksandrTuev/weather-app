@@ -27,8 +27,10 @@ public class UserService {
     private final UserMapper userMapper;
 
     public Cookie signIn(UserSignInDto userDto) {
+
         User user = findUserByUsername(userDto.getUsername());
         if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+
             log.info("Authorization [id: {}]", user.getId());
             return sessionService.createSession(user.getId());
         } else {
