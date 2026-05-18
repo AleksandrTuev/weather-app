@@ -16,7 +16,7 @@ public class LocationRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private static final String INSERT_LOCATION = "INSERT INTO locations (name, user_id, latitude, longitude) VALUES (?, ?, ?, ?)";
-    public static final String FIND_LOCATION = "SELECT id, name, user_id, latitude, longitude FROM locations";
+    public static final String FIND_LOCATION = "SELECT id, name, user_id, latitude, longitude FROM locations WHERE user_id = ?";
     public static final String DELETE_LOCATION = "DELETE FROM locations WHERE id = ?";
 
     public void create(Location location) {
@@ -25,8 +25,8 @@ public class LocationRepository {
                 location.getUserId(), location.getLatitude(), location.getLongitude());
     }
 
-    public List<Location> findAll() {
-        return jdbcTemplate.query(FIND_LOCATION, new BeanPropertyRowMapper<>(Location.class));
+    public List<Location> findAll(Integer userId) {
+        return jdbcTemplate.query(FIND_LOCATION, new BeanPropertyRowMapper<>(Location.class), userId);
     }
 
     public void delete(int locationId) {

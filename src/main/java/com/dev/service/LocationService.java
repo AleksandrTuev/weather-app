@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -54,18 +55,22 @@ public class LocationService {
     }
 
     public List<OpenWeatherCityDto> getSaveLocations() {
-        List<Location> locations = locationRepository.findAll();
+        Integer id = Integer.parseInt(MDC.get("userId"));
         List<OpenWeatherCityDto> list = new ArrayList<>();
-        locations.forEach(location -> {
-            URI uri = UriComponentsBuilder
-                    .fromUriString("http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=metric&APPID={apiKey}")
-                    .build(location.getLatitude(), location.getLongitude(), apiKey);
-            String apiUrl = uri.toString();
-            String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
-            OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
-            cityDto.setId(location.getId());
-            list.add(cityDto);
-        });
+
+        if (id != null) {
+            List<Location> locations = locationRepository.findAll(id);
+            locations.forEach(location -> {
+                URI uri = UriComponentsBuilder
+                        .fromUriString("http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=metric&APPID={apiKey}")
+                        .build(location.getLatitude(), location.getLongitude(), apiKey);
+                String apiUrl = uri.toString();
+                String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
+                OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
+                cityDto.setId(id);
+                list.add(cityDto);
+            });
+        }
         return list;
     }
 
