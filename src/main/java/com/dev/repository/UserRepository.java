@@ -32,12 +32,12 @@ public class UserRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("login", user.getUsername());
         parameters.put("password", user.getPassword());
-        log.info("Saving user: {}", user);
+        log.debug("Executing SQL request to saving user: {}", user);
         return simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
     }
 
     public Optional<User> findByName(String username) {
-        log.info("Find user by name: {}", username);
+        log.debug("Executing SQL request to find user by name: {}", username);
         return jdbcTemplate.query(SELECT_USER_BY_LOGIN,
                         new BeanPropertyRowMapper<>(User.class),
                         username)

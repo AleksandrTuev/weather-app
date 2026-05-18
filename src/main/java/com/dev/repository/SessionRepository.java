@@ -22,23 +22,23 @@ public class SessionRepository {
     public static final String FIND_SESSION = "SELECT id as uuid, user_id, expires_at FROM sessions WHERE id = ?";
 
     public void create(Session session) {
-        log.info("Creating session {}", session);
+        log.debug("Executing SQL request to creating session {}", session);
         jdbcTemplate.update(INSERT_SESSION, session.getUuid(), session.getUserId(), session.getExpiresAt());
     }
 
     public void delete(UUID id) {
-        log.info("Deleting session {}", id);
+        log.debug("Executing SQL request to deleting session {}", id);
         jdbcTemplate.update(DELETE_SESSION, id);
     }
 
     public Session getById(UUID id) {
-        log.info("Get session by id: {}", id);
+        log.debug("Executing SQL request to getting session by id: {}", id);
         return jdbcTemplate.query(FIND_SESSION, new BeanPropertyRowMapper<>(Session.class), id)
                 .stream().findFirst().orElse(null);
     }
 
     public void deleteOldSessions() {
-        log.info("Deleting old sessions");
+        log.debug("Executing SQL request to deleting old sessions");
         jdbcTemplate.update(DELETE_OLD_SESSIONS, LocalDateTime.now());
     }
 }

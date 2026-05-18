@@ -20,16 +20,18 @@ public class LocationRepository {
     public static final String DELETE_LOCATION = "DELETE FROM locations WHERE id = ?";
 
     public void create(Location location) {
-        log.info("Creating session {}", location);
+        log.debug("Executing SQL request to creating a new location: {}", location);
         jdbcTemplate.update(INSERT_LOCATION, location.getName(),
                 location.getUserId(), location.getLatitude(), location.getLongitude());
     }
 
     public List<Location> findAll(Integer userId) {
+        log.debug("Executing SQL request to finding all locations by user: {}", userId);
         return jdbcTemplate.query(FIND_LOCATION, new BeanPropertyRowMapper<>(Location.class), userId);
     }
 
     public void delete(int locationId) {
+        log.debug("Executing SQL request to deleting location with id: {}", locationId);
         jdbcTemplate.update(DELETE_LOCATION, locationId);
     }
 }

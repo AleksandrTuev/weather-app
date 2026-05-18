@@ -51,6 +51,7 @@ public class LocationService {
                 .build(nameLocation, LIMIT, apiKey);
         String apiUrl = uri.toString();
         String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
+        log.info("Getting searched locations");
         return OpenWeatherParser.parseListInputData(text);
     }
 
@@ -71,6 +72,7 @@ public class LocationService {
                 list.add(cityDto);
             });
         }
+        log.info("Getting saved locations");
         return list;
     }
 
@@ -84,5 +86,6 @@ public class LocationService {
 
     public void deleteLocation(int locationId) {
         locationRepository.delete(locationId);
+        log.info("Deleted location with id: {}", locationId);
     }
 }
