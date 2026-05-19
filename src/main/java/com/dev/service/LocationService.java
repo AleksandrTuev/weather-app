@@ -68,7 +68,7 @@ public class LocationService {
                 String apiUrl = uri.toString();
                 String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
                 OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
-                cityDto.setId(id);
+                cityDto.setId(location.getId());
                 list.add(cityDto);
             });
         }
