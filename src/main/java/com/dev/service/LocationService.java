@@ -16,11 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +27,10 @@ public class LocationService {
     private final LocationRepository locationRepository;
     @Value("${api.key}")
     private String apiKey;
-    private final static int LIMIT = 5;
+
+    private static final String URL_GEO = "http://api.openweathermap.org/geo/1.0/direct";
+    private static final String URL_CITY = "http://api.openweathermap.org/data/2.5/weather";
+    private static final int LIMIT = 5;
 
     public void addLocation(OpenWeatherGeoDto geoDto, HttpServletRequest request) {
         int userId = sessionService.getUserIdBySessionId(getSessionId(request));
@@ -46,10 +45,14 @@ public class LocationService {
     }
 
     public List<OpenWeatherGeoDto> getSearchedLocations(String nameLocation) {
-        URI uri = UriComponentsBuilder
-                .fromUriString("http://api.openweathermap.org/geo/1.0/direct?q={q}&units=metric&limit={limit}&APPID={apiKey}")
-                .build(nameLocation, LIMIT, apiKey);
-        String apiUrl = uri.toString();
+        String apiUrl = UriComponentsBuilder
+                .fromUriString(URL_GEO)
+                .queryParam("q", nameLocation)
+                .queryParam("units", "metric")
+                .queryParam("limit", LIMIT)
+                .queryParam("APPID", apiKey)
+                .build().toUriString();
+
         String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
         log.info("Getting searched locations");
         return OpenWeatherParser.parseListInputData(text);
@@ -57,23 +60,27 @@ public class LocationService {
 
     public List<OpenWeatherCityDto> getSaveLocations() {
         Integer id = Integer.parseInt(MDC.get("userId"));
-        List<OpenWeatherCityDto> list = new ArrayList<>();
+        Set<OpenWeatherCityDto> set = new HashSet<>();
 
         if (id != null) {
             List<Location> locations = locationRepository.findAll(id);
             locations.forEach(location -> {
-                URI uri = UriComponentsBuilder
-                        .fromUriString("http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=metric&APPID={apiKey}")
-                        .build(location.getLatitude(), location.getLongitude(), apiKey);
-                String apiUrl = uri.toString();
+                String apiUrl = UriComponentsBuilder
+                        .fromUriString(URL_CITY)
+                        .queryParam("lat", location.getLatitude())
+                        .queryParam("lon", location.getLongitude())
+                        .queryParam("units", "metric")
+                        .queryParam("APPID", apiKey)
+                        .build().toUriString();
+
                 String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
                 OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
                 cityDto.setId(location.getId());
-                list.add(cityDto);
+                set.add(cityDto);
             });
         }
         log.info("Getting saved locations");
-        return list;
+        return set.stream().toList();
     }
 
     private UUID getSessionId(HttpServletRequest request) {
