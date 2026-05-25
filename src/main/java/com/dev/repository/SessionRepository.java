@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -31,10 +32,9 @@ public class SessionRepository {
         jdbcTemplate.update(DELETE_SESSION, id);
     }
 
-    public Session getById(UUID id) {
+    public List<Session> getById(UUID id) {
         log.debug("Executing SQL request to getting session by id: {}", id);
-        return jdbcTemplate.query(FIND_SESSION, new BeanPropertyRowMapper<>(Session.class), id)
-                .stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_SESSION, new BeanPropertyRowMapper<>(Session.class), id);
     }
 
     public void deleteOldSessions() {

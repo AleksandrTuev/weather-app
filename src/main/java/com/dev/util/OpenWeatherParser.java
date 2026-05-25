@@ -38,7 +38,7 @@ public class OpenWeatherParser {
         for (int i = 0; (i < root.size() && i < 5); i++) {
             list.add(OpenWeatherGeoDto.builder()
                     .name(root.get(i).get("name").asString())
-                    .local_names(root.has("local_names") ? root.get("local_names").get("ru").asString() : "-")
+                    .localNames(root.has("local_names") ? root.get("local_names").get("ru").asString() : "-")
                     .country(root.get(i).has("country") ? root.get(i).get("country").asString() : "-")
                     .state(root.get(i).has("state") ? root.get(i).get("state").asString() : "-")
                     .latitude(root.get(i).get("lat").asDecimal())

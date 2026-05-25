@@ -4,19 +4,20 @@ import com.dev.dto.OpenWeatherCityDto;
 import com.dev.dto.OpenWeatherGeoDto;
 import com.dev.model.Location;
 import com.dev.repository.LocationRepository;
+import com.dev.util.CookieUtils;
 import com.dev.util.OpenWeatherParser;
-import com.dev.util.ProjectConstants;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,12 +35,14 @@ public class LocationService {
 
     public void addLocation(OpenWeatherGeoDto geoDto, HttpServletRequest request) {
         int userId = sessionService.getUserIdBySessionId(getSessionId(request));
+
         Location location = Location.builder()
                 .name(geoDto.getName())
                 .userId(userId)
                 .latitude(geoDto.getLatitude())
                 .longitude(geoDto.getLongitude())
                 .build();
+
         log.info("Adding location: {}", location);
         locationRepository.create(location);
     }
@@ -58,37 +61,32 @@ public class LocationService {
         return OpenWeatherParser.parseListInputData(text);
     }
 
-    public List<OpenWeatherCityDto> getSaveLocations() {
-        Integer id = Integer.parseInt(MDC.get("userId"));
+    public List<OpenWeatherCityDto> getSaveLocations(int userId) {
         Set<OpenWeatherCityDto> set = new HashSet<>();
 
-        if (id != null) {
-            List<Location> locations = locationRepository.findAll(id);
-            locations.forEach(location -> {
-                String apiUrl = UriComponentsBuilder
-                        .fromUriString(URL_CITY)
-                        .queryParam("lat", location.getLatitude())
-                        .queryParam("lon", location.getLongitude())
-                        .queryParam("units", "metric")
-                        .queryParam("APPID", apiKey)
-                        .build().toUriString();
+        List<Location> locations = locationRepository.findAll(userId);
+        locations.forEach(location -> {
+            String apiUrl = UriComponentsBuilder
+                    .fromUriString(URL_CITY)
+                    .queryParam("lat", location.getLatitude())
+                    .queryParam("lon", location.getLongitude())
+                    .queryParam("units", "metric")
+                    .queryParam("APPID", apiKey)
+                    .build().toUriString();
 
-                String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
-                OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
-                cityDto.setId(location.getId());
-                set.add(cityDto);
-            });
-        }
+            String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
+            OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
+            cityDto.setId(location.getId());
+            set.add(cityDto);
+        });
+
         log.info("Getting saved locations");
         return set.stream().toList();
     }
 
     private UUID getSessionId(HttpServletRequest request) {
-        Cookie newCookie = Arrays.stream(request
-                        .getCookies())
-                .filter(cookie -> cookie.getName().equals(ProjectConstants.SESSION_ID))
-                .findFirst().orElseThrow();
-        return UUID.fromString(newCookie.getValue());
+        log.info("Getting session id");
+        return CookieUtils.getSessionId(request);
     }
 
     public void deleteLocation(int locationId) {

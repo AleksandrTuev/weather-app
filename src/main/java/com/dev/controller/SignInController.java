@@ -6,8 +6,8 @@ import com.dev.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,13 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/sign-in")
 @Slf4j
+@RequiredArgsConstructor
 public class SignInController{
     private final UserService userService;
-
-    @Autowired
-    public SignInController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public String getLoginPage(Model model) {

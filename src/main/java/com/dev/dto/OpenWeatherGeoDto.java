@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Builder
 public class OpenWeatherGeoDto {
     private String name;
-    private String local_names;
+    private String localNames;
     private String country;
     private String state;
     private BigDecimal latitude;

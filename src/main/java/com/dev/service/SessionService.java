@@ -1,5 +1,6 @@
 package com.dev.service;
 
+import com.dev.exception.SessionNotFoundException;
 import com.dev.model.Session;
 import com.dev.repository.SessionRepository;
 import jakarta.servlet.http.Cookie;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static com.dev.util.ProjectConstants.*;
@@ -36,11 +38,6 @@ public class SessionService {
         return createCookie(uuid);
     }
 
-    public boolean hasSession(UUID sessionId) {
-        log.info("Checking if session exists with id {}", sessionId);
-        return sessionRepository.getById(sessionId) != null;
-    }
-
     public void deleteSession(UUID sessionId) {
         log.info("Deleting session with id {}", sessionId);
         sessionRepository.delete(sessionId);
@@ -56,7 +53,12 @@ public class SessionService {
 
     public int getUserIdBySessionId(UUID sessionId) {
         log.info("Getting a user id by session id: {}", sessionId);
-        return sessionRepository.getById(sessionId).getUserId();
+
+        List<Session> list = sessionRepository.getById(sessionId);
+        if (list.isEmpty()) {
+            throw new SessionNotFoundException("Session with id " + sessionId + " not found");
+        }
+        return list.stream().findFirst().get().getUserId();
     }
 
     private Cookie createCookie(UUID uuid) {

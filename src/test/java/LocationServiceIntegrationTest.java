@@ -64,10 +64,10 @@ public class LocationServiceIntegrationTest {
         locationRepository.create(location);
         locationRepository.create(location1);
 
-        List<OpenWeatherCityDto> list = locationService.getSaveLocations();
+        List<OpenWeatherCityDto> list = locationService.getSaveLocations(1);
         Assertions.assertNotNull(list);
         Assertions.assertEquals(2, list.size());
-        Assertions.assertEquals("Moscow", list.get(0).getNameLocation());
-        Assertions.assertEquals("Kazan’", list.get(1).getNameLocation());
+        Assertions.assertEquals("Moscow", list.get(1).getNameLocation());
+        Assertions.assertEquals("Kazan’", list.get(0).getNameLocation());
     }
 }

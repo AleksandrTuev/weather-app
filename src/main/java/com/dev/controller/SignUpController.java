@@ -5,7 +5,7 @@ import com.dev.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,14 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/sign-up")
+@RequiredArgsConstructor
 public class SignUpController {
 
     private final UserService userService;
-
-    @Autowired
-    public SignUpController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public String getRegisterPage(Model model) {

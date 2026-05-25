@@ -20,30 +20,28 @@ import static com.dev.util.ProjectConstants.*;
 @AllArgsConstructor
 @Slf4j
 public class ExceptionApiHandler {
-    private final HttpServletRequest req;
-
     public static final String SIGN_IN_WITH_ERRORS = "sign-in-with-errors";
     private static final String SIGN_UP_WITH_ERRORS = "sign-up-with-errors";
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UsernameAlreadyExistsException.class)
-    public ModelAndView handleAlreadyExistsName(UsernameAlreadyExistsException e) {
+    public ModelAndView handleAlreadyExistsName(HttpServletRequest req, UsernameAlreadyExistsException e) {
         log.error(e.getMessage(), e);
-        return createModelAndView(SIGN_UP_WITH_ERRORS, e);
+        return createModelAndView(req, SIGN_UP_WITH_ERRORS, e);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPasswordException.class)
-    public ModelAndView handleInvalidNameOrPassword(InvalidPasswordException e) {
+    public ModelAndView handleInvalidNameOrPassword(HttpServletRequest req, InvalidPasswordException e) {
         log.error(e.getMessage(), e);
-        return createModelAndView(SIGN_IN_WITH_ERRORS, e);
+        return createModelAndView(req, SIGN_IN_WITH_ERRORS, e);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
-    public ModelAndView handleNotFound(UserNotFoundException e) {
+    public ModelAndView handleNotFound(HttpServletRequest req, UserNotFoundException e) {
         log.error(e.getMessage(), e);
-        return createModelAndView(SIGN_IN_WITH_ERRORS, e);
+        return createModelAndView(req, SIGN_IN_WITH_ERRORS, e);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -53,15 +51,15 @@ public class ExceptionApiHandler {
         return "error";
     }
 
-    private ModelAndView createModelAndView(String viewName, Exception e) {
+    private ModelAndView createModelAndView(HttpServletRequest req, String viewName, Exception e) {
         ModelAndView modelAndView = new ModelAndView(viewName);
         switch (viewName) {
             case SIGN_IN_WITH_ERRORS: {
-                modelAndView.addObject(USER, getUserSignInDto());
+                modelAndView.addObject(USER, getUserSignInDto(req));
                 break;
             }
             case SIGN_UP_WITH_ERRORS: {
-                modelAndView.addObject(USER, getUserSignUpDto());
+                modelAndView.addObject(USER, getUserSignUpDto(req));
                 break;
             }
         }
@@ -69,14 +67,14 @@ public class ExceptionApiHandler {
         return modelAndView;
     }
 
-    private UserSignInDto getUserSignInDto() {
+    private UserSignInDto getUserSignInDto(HttpServletRequest req) {
         UserSignInDto userSignInDto = new UserSignInDto();
         userSignInDto.setUsername(req.getParameter(USERNAME));
         userSignInDto.setPassword(req.getParameter(PASSWORD));
         return userSignInDto;
     }
 
-    private UserSignUpDto getUserSignUpDto() {
+    private UserSignUpDto getUserSignUpDto(HttpServletRequest req) {
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setUsername(req.getParameter(USERNAME));
         userSignUpDto.setPassword(req.getParameter(PASSWORD));
