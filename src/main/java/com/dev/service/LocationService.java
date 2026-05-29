@@ -28,9 +28,10 @@ public class LocationService {
     private final LocationRepository locationRepository;
     @Value("${api.key}")
     private String apiKey;
-
-    private static final String URL_GEO = "http://api.openweathermap.org/geo/1.0/direct";
-    private static final String URL_CITY = "http://api.openweathermap.org/data/2.5/weather";
+    @Value("${url.geo}")
+    private String URL_GEO;
+    @Value("${url.city}")
+    private String URL_CITY;
     private static final int LIMIT = 5;
 
     public void addLocation(OpenWeatherGeoDto geoDto, HttpServletRequest request) {
@@ -54,7 +55,8 @@ public class LocationService {
                 .queryParam("units", "metric")
                 .queryParam("limit", LIMIT)
                 .queryParam("APPID", apiKey)
-                .build().toUriString();
+                .build()
+                .toUriString();
 
         String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
         log.info("Getting searched locations");
@@ -72,7 +74,8 @@ public class LocationService {
                     .queryParam("lon", location.getLongitude())
                     .queryParam("units", "metric")
                     .queryParam("APPID", apiKey)
-                    .build().toUriString();
+                    .build()
+                    .toUriString();
 
             String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
             OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
