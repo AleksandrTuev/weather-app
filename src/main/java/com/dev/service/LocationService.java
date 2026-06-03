@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +61,7 @@ public class LocationService {
     }
 
     public List<OpenWeatherCityDto> getSaveLocations(int userId) {
-        Set<OpenWeatherCityDto> set = new HashSet<>();
+        List<OpenWeatherCityDto> list = new ArrayList<>();
 
         List<Location> locations = locationRepository.findAll(userId);
         locations.forEach(location -> {
@@ -80,9 +77,11 @@ public class LocationService {
             String text = restTemplate.getForEntity(apiUrl, String.class).getBody();
             OpenWeatherCityDto cityDto = OpenWeatherParser.parseInputData(text);
             cityDto.setId(location.getId());
-            set.add(cityDto);
+            cityDto.setNameLocation(location.getName());
+            list.add(cityDto);
         });
-
+        Collections.reverse(list);
+        Set<OpenWeatherCityDto> set = new LinkedHashSet<>(list);
         log.info("Getting saved locations");
         return set.stream().toList();
     }
