@@ -1,5 +1,8 @@
-import com.dev.config.LiquibaseConfig;
-import com.dev.config.SpringConfig;
+package com.dev.integration;
+
+import com.dev.config.TestDataConfig;
+import com.dev.config.TestLiquibaseConfig;
+import com.dev.config.TestSpringConfig;
 import com.dev.dto.UserSignInDto;
 import com.dev.dto.UserSignUpDto;
 import com.dev.exception.InvalidPasswordException;
@@ -19,15 +22,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { SpringConfig.class, LiquibaseConfig.class })
-@WebAppConfiguration
+@ContextConfiguration(classes = {
+        TestDataConfig.class, TestSpringConfig.class, TestLiquibaseConfig.class })
 @Transactional
 public class UserServiceIntegrationTest {
     private static final String USERNAME = "ivan";

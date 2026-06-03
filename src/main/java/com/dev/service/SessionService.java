@@ -22,7 +22,7 @@ public class SessionService {
     private final long sessionStorageTime;
 
     @Autowired
-    public SessionService(SessionRepository sessionRepository, @Value("${sessionStorageTime}") long sessionStorageTime) {
+    public SessionService(SessionRepository sessionRepository, @Value("${session_storage_time:30}") long sessionStorageTime) {
         this.sessionRepository = sessionRepository;
         this.sessionStorageTime = sessionStorageTime;
     }

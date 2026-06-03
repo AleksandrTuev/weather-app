@@ -11,12 +11,12 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("classpath:application.properties")
-public class DataConfig {
+@PropertySource("classpath:test-application.properties")
+public class TestDataConfig {
+    private final Environment env;
 
-    private Environment env;
     @Autowired
-    public DataConfig(Environment env) {
+    public TestDataConfig(Environment env) {
         this.env = env;
     }
 

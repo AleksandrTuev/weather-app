@@ -23,7 +23,7 @@ public class LocationService {
     private final RestTemplate restTemplate;
     private final SessionService sessionService;
     private final LocationRepository locationRepository;
-    @Value("${api.key}")
+    @Value("${api.key:}")
     private String apiKey;
     @Value("${url.geo}")
     private String URL_GEO;

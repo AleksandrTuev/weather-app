@@ -1,5 +1,6 @@
-import com.dev.config.LiquibaseConfig;
-import com.dev.config.SpringConfig;
+package com.dev.integration;
+
+import com.dev.config.*;
 import com.dev.dto.OpenWeatherCityDto;
 import com.dev.dto.OpenWeatherGeoDto;
 import com.dev.dto.UserSignUpDto;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.ExpectedCount;
@@ -38,8 +40,8 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { SpringConfig.class, LiquibaseConfig.class })
-@WebAppConfiguration
+@ContextConfiguration(classes = {
+        TestDataConfig.class, TestSpringConfig.class, TestLiquibaseConfig.class })
 @Transactional
 public class LocationServiceIntegrationTest {
     @Autowired
@@ -164,14 +166,13 @@ public class LocationServiceIntegrationTest {
         Assertions.assertNotNull(list);
         Assertions.assertEquals(2, list.size());
 
-        boolean hasMoscow = list.stream().anyMatch(dto -> "Moscow".equals(dto.getNameLocation()));
-        boolean hasKazan = list.stream().anyMatch(dto -> "Kazan’".equals(dto.getNameLocation()));
+        boolean hasMoscow = list.stream().anyMatch(dto -> "Москва".equals(dto.getNameLocation()));
+        boolean hasKazan = list.stream().anyMatch(dto -> "Казань".equals(dto.getNameLocation()));
 
         Assertions.assertTrue(hasMoscow);
         Assertions.assertTrue(hasKazan);
     }
 
-    //статусы 4хх, 5хх
     @Test
     void shouldThrowExceptionWhenOpenWeatherReturn401() {
         String location = "Moscow";
