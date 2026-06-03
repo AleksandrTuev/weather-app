@@ -70,15 +70,12 @@ public class ExceptionApiHandler {
     private UserSignInDto getUserSignInDto(HttpServletRequest req) {
         UserSignInDto userSignInDto = new UserSignInDto();
         userSignInDto.setUsername(req.getParameter(USERNAME));
-        userSignInDto.setPassword(req.getParameter(PASSWORD));
         return userSignInDto;
     }
 
     private UserSignUpDto getUserSignUpDto(HttpServletRequest req) {
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setUsername(req.getParameter(USERNAME));
-        userSignUpDto.setPassword(req.getParameter(PASSWORD));
-        userSignUpDto.setRepeatPassword(req.getParameter(REPEAT_PASSWORD));
         return userSignUpDto;
     }
 }

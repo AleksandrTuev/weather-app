@@ -19,7 +19,7 @@ public class HomeController {
     private final LocationService locationService;
     private final SessionService sessionService;
 
-    @GetMapping
+    @GetMapping()
     public String getHomePage(HttpServletRequest request, Model model) {
         UUID sessionId = CookieUtils.getSessionId(request);
         int id = sessionService.getUserIdBySessionId(sessionId);
