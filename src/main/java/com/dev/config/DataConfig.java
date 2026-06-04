@@ -11,7 +11,11 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("classpath:application.properties")
+//@PropertySource("classpath:application.properties")
+
+//@PropertySource("classpath:application.properties")
+@PropertySource(value = "classpath:application-${spring.profiles.active:local}.properties",
+        ignoreResourceNotFound = true)
 public class DataConfig {
 
     private Environment env;
